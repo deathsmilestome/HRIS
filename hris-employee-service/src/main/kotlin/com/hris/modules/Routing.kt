@@ -6,7 +6,9 @@ import io.github.smiley4.ktorswaggerui.SwaggerUI
 import io.github.smiley4.ktorswaggerui.routing.openApiSpec
 import io.github.smiley4.ktorswaggerui.routing.swaggerUI
 import io.ktor.server.application.*
+import io.ktor.server.plugins.callloging.*
 import io.ktor.server.routing.*
+import org.slf4j.event.Level
 
 fun Application.configureRouting() {
     routing {
@@ -27,5 +29,8 @@ fun Application.configureRouting() {
             title = "API"
             description = "An api documentation for employee-service."
         }
+    }
+    install(CallLogging) {
+        level = Level.INFO
     }
 }

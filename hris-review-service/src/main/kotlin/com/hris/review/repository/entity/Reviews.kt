@@ -15,8 +15,4 @@ object Reviews : Table() {
     val lastModifiedAt = datetime("last_modified_at").defaultExpression(CurrentDateTime)
 
     override val primaryKey = PrimaryKey(id)
-
-    init {
-        uniqueIndex(employeeId, createdAt)
-    }
 }

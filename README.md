@@ -9,6 +9,8 @@
         <li><a href="#стек">Стек</a></li>
         <li><a href="#общая-структура">Общая структура</a></li>
         <li><a href="#employee-service">Employee service</a></li>
+        <li><a href="#review-service">Review service</a></li>
+        <li><a href="#оптимизация">Оптимизация</a></li>
       </ul>
     </li>
     <li>
@@ -31,12 +33,12 @@
 - **Kodein**
 - **Exposed**
 - **Docker**
+- **Nginx**
 - **Redis**
 - **PostgreSQL**
 - **Swagger**
 - **Mockk**
 - **Testcontainers**
-- **Nginx**
 
 ### Общая структура
 
@@ -50,6 +52,8 @@
 3. **Review service**
    - Сервис, предоставляющий функционал для работы с обзорами эффективности.
    - База данных для хранения обзоров эффективности.
+
+![img.png](docs/img.png)
 
 ### Employee service
 #### Сотрудники
@@ -108,9 +112,39 @@
 
 **ВНИМАНИЕ**: Используется порт, указанный в [REVIEW_SERVICE_PORT](.env)
 
-## Запуск
+### Оптимизация
+ #### База данных сотрудников
+ При необходимости оптимизации работы базы данных сотрудников применить следующие меры:
+ Проиндексировать поле `supervisor_id` в таблице сотрудников с использованием B-tree индекса
+ ```postgresql
+   CREATE INDEX index_supervisor_id
+    ON employees(supervisor_id);
+   ``` 
 
-some text
+#### База данных обзоров эффективности
+ При необходимости оптимизации работы базы обзоров эффективности применить следующие меры:
+ Проиндексировать поля `employee_id` и `created_at` в таблице обзоров с использованием B-tree индекса
+ ```postgresql
+   CREATE INDEX index_employee_id_to_created_at
+    ON reviews(employee_id, created_at);
+   ``` 
+
+ Организовать партиционирование таблицы обзоров. Каждый месяц создавать партицию, в которую будут помещаться новые обзоры, созданные за этот месяц.
+ Также необходимо создать правило, которое будет записывать обзор в правильную партицию.
+ В данном примере используется шаблон для автоматического создания партиций для года `year` и месяца `month`.
+```postgresql
+ CREATE TABLE reviews_y${year}m${month}
+    CHECK ( created_at >= timestamp '${year}-${month}-01 00:00:00.000000' AND created_at < timestamp '${year}-${month}-01 00:00:00.000000' )
+INHERITS (public.reviews);
+
+CREATE RULE reviews_y${year}m${month} AS rule
+   ON INSERT TO public.reviews WHERE
+        ( created_at >= timestamp '${year}-${month}-01 00:00:00.000000' AND created_at < timestamp '${year}-${month}-01 00:00:00.000000' )
+   DO INSTEAD
+        INSERT INTO reviews_y${year}m${month} VALUES (NEW.*)
+ ```
+
+## Запуск
 
 ### Сборка и развертывание
 
@@ -133,29 +167,30 @@ some text
 
 ### Описание env файла
 
-| Параметр                   | Занчение по дефолту                          | Описание                                                        |
-|----------------------------|----------------------------------------------|-----------------------------------------------------------------|
-| EMPLOYEE_SERVICE_HOST      | 0.0.0.0                                      | Хост employee-service                                           |
-| EMPLOYEE_SERVICE_PORT      | 5000                                         | Порт employee-service                                           |
-| EMPLOYEE_SERVICE_NAME      | employee-service                             | Наименование роута в employee-service для nginx                 |
-| EMPLOYEE_DB_USER           | dstm                                         | Пользователь базы данных для employee-service                   |
-| EMPLOYEE_DB_PASS           | dstm                                         | Пароль базы данных для employee-service                         |
-| EMPLOYEE_DB_DRIVER         | org.postgresql.Driver                        | Драйвер базы данных для employee-service                        |
-| EMPLOYEE_DB_URL            | jdbc:postgresql://db-employee:5432/employees | Путь до базы данных для employee-service                        |
-| EMPLOYEE_DB_NAME           | employees                                    | Имя базы данных для employee-service                            |
-| EMPLOYEE_DB_PORT           | 5432                                         | Порт базы данных для employee-service                           |
-| EMPLOYEE_REDIS_HOST        | redis-cache                                  | Хост базы данных для employee-service                           |
-| EMPLOYEE_REDIS_PORT        | 6379                                         | Порт редиса для кеша                                            |
-| EMPLOYEE_REDIS_TTL         | 10                                           | Время жизни записи в кеше                                       |
-| REVIEW_SERVICE_HOST        | 0.0.0.0                                      | Хост review-service                                             |
-| REVIEW_SERVICE_PORT        | 5001                                         | Порт review-service                                             |
-| REVIEW_SERVICE_NAME        | review-service                               | Наименование роута в review-service для nginx                   |
-| REVIEW_SERVICE_DATE_FORMAT | dd-MM-yyyy-HH:mm                             | Формат даты для обзоров производительности                      |
-| DATE_FORMAT_REVIEW_FILTER  | dd-MM-yyyy                                   | Формат даты для фильтра обзоров производительности при запросах |
-| REVIEW_DB_USER             | dstm                                         | Пользователь базы данных для review-service                     |
-| REVIEW_DB_PASS             | dstm                                         | Пароль базы данных для review-service                           |
-| REVIEW_DB_DRIVER           | org.postgresql.Driver                        | Драйвер базы данных для review-service                          |
-| REVIEW_DB_URL              | jdbc:postgresql://db-review:5432/reviews     | Путь до базы данных для review-service                          |
-| REVIEW_DB_NAME             | reviews                                      | Имя базы данных для review-service                              |
-| REVIEW_DB_PORT             | 5433                                         | Порт базы данных для review-service                             |
-| NGINX_PORT                 | 80                                           | Порт для gateway                                                |
+| Параметр                    | Занчение по дефолту                           | Описание                                                        |
+|-----------------------------|-----------------------------------------------|-----------------------------------------------------------------|
+| EMPLOYEE_SERVICE_HOST       | 0.0.0.0                                       | Хост employee-service                                           |
+| EMPLOYEE_SERVICE_PORT       | 5000                                          | Порт employee-service                                           |
+| EMPLOYEE_SERVICE_NAME       | employee-service                              | Наименование роута в employee-service для nginx                 |
+| EMPLOYEE_DB_USER            | dstm                                          | Пользователь базы данных для employee-service                   |
+| EMPLOYEE_DB_PASS            | dstm                                          | Пароль базы данных для employee-service                         |
+| EMPLOYEE_DB_DRIVER          | org.postgresql.Driver                         | Драйвер базы данных для employee-service                        |
+| EMPLOYEE_DB_URL             | jdbc:postgresql://db-employee:5432/employees  | Путь до базы данных для employee-service                        |
+| EMPLOYEE_DB_NAME            | employees                                     | Имя базы данных для employee-service                            |
+| EMPLOYEE_DB_PORT            | 5432                                          | Порт базы данных для employee-service                           |
+| EMPLOYEE_REDIS_HOST         | redis-cache                                   | Хост базы данных для employee-service                           |
+| EMPLOYEE_REDIS_PORT         | 6379                                          | Порт редиса для кеша                                            |
+| EMPLOYEE_REDIS_TTL          | 10                                            | Время жизни записи в кеше                                       |
+| REVIEW_SERVICE_HOST         | 0.0.0.0                                       | Хост review-service                                             |
+| REVIEW_SERVICE_PORT         | 5001                                          | Порт review-service                                             |
+| REVIEW_SERVICE_NAME         | review-service                                | Наименование роута в review-service для nginx                   |
+| REVIEW_SERVICE_DATE_FORMAT  | dd-MM-yyyy-HH:mm                              | Формат даты для обзоров производительности                      |
+| DATE_FORMAT_REVIEW_FILTER   | dd-MM-yyyy                                    | Формат даты для фильтра обзоров производительности при запросах |
+| REVIEW_DB_USER              | dstm                                          | Пользователь базы данных для review-service                     |
+| REVIEW_DB_PASS              | dstm                                          | Пароль базы данных для review-service                           |
+| REVIEW_DB_DRIVER            | org.postgresql.Driver                         | Драйвер базы данных для review-service                          |
+| REVIEW_DB_URL               | jdbc:postgresql://db-review:5432/reviews      | Путь до базы данных для review-service                          |
+| REVIEW_DB_NAME              | reviews                                       | Имя базы данных для review-service                              |
+| REVIEW_DB_PORT              | 5433                                          | Порт базы данных для review-service                             |
+| NGINX_PORT                  | 80                                            | Порт для gateway                                                |
+| LOG_LEVEL                   | INFO                                          | Уровень логирования                                             |
