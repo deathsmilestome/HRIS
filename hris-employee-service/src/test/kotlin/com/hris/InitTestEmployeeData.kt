@@ -1,6 +1,5 @@
 package com.hris
 
-
 import com.hris.dto.Employee
 import com.hris.dto.HierarchyNode
 import com.hris.repository.EmployeeRepository
@@ -118,5 +117,4 @@ fun Application.initTestData() {
         }
         )
     }
-
 }
