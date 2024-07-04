@@ -1,0 +1,89 @@
+version: "3.9"
+
+services:
+  employee-service:
+    build: ./hris-employee-service
+    env_file: ".env"
+    ports:
+      - "$EMPLOYEE_SERVICE_PORT:$EMPLOYEE_SERVICE_PORT"
+    networks:
+      - hris_network
+    depends_on:
+      - db-employee
+      - redis-cache
+  db-employee:
+    image: postgres:13.3
+    env_file: ".env"
+    environment:
+      POSTGRES_DB: "$EMPLOYEE_DB_NAME"
+      POSTGRES_USER: "$EMPLOYEE_DB_USER"
+      POSTGRES_PASSWORD: "$EMPLOYEE_DB_PASS"
+    ports:
+      - "$EMPLOYEE_DB_PORT:5432"
+    networks:
+      - hris_network
+    volumes:
+      - data-db-employee:/var/lib/postgresql/data
+  redis-cache:
+    image: redis:alpine
+    env_file: ".env"
+    command: redis-server /usr/local/etc/redis/redis.conf
+    ports:
+      - "$EMPLOYEE_REDIS_PORT:$EMPLOYEE_REDIS_PORT"
+    volumes:
+      - redis_data:/data
+      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
+    restart: always
+    networks:
+      - hris_network
+#---------------------------------------------
+  review-service:
+    build: ./hris-review-service
+    env_file: ".env"
+    ports:
+      - "$REVIEW_SERVICE_PORT:$REVIEW_SERVICE_PORT"
+    networks:
+      - hris_network
+    depends_on:
+      - db-review
+  db-review:
+    image: postgres:13.3
+    env_file: ".env"
+    environment:
+      POSTGRES_DB: "$REVIEW_DB_NAME"
+      POSTGRES_USER: "$REVIEW_DB_USER"
+      POSTGRES_PASSWORD: "$REVIEW_DB_PASS"
+    ports:
+      - "$REVIEW_DB_PORT:5432"
+    networks:
+      - hris_network
+    volumes:
+      - data-db-review:/var/lib/postgresql/data
+  #---------------------------------------------
+  nginx:
+    image: nginx
+    env_file: .env
+    environment:
+      EMPLOYEE_SERVICE_PORT: "$EMPLOYEE_SERVICE_PORT"
+      EMPLOYEE_SERVICE_NAME: "$EMPLOYEE_SERVICE_NAME"
+      REVIEW_SERVICE_PORT: "$REVIEW_SERVICE_PORT"
+      REVIEW_SERVICE_NAME: "$REVIEW_SERVICE_NAME"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/nginx.conf.template
+    ports:
+      - "$NGINX_PORT:80"
+    command: /bin/bash -c "envsubst < /etc/nginx/conf.d/nginx.conf.template > /etc/nginx/nginx.conf && nginx -g 'daemon off;'"
+    networks:
+      - hris_network
+    depends_on:
+      - review-service
+      - employee-service
+
+networks:
+  hris_network:
+    name: hris_network
+
+volumes:
+  data-db-review:
+  data-db-employee:
+  redis_data:

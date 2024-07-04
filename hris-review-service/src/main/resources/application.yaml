@@ -1,0 +1,20 @@
+ktor:
+  deployment:
+    host: $REVIEW_SERVICE_HOST
+    port: $REVIEW_SERVICE_PORT
+  application:
+    modules:
+      - com.hris.review.modules.KodeinKt.configureDI
+      - com.hris.review.modules.DatabasesKt.configureDatabases
+      - com.hris.review.modules.RoutingKt.configureRouting
+      - com.hris.review.modules.SerializationKt.configureSerialization
+      - com.hris.review.modules.StatusPagesKt.configureExceptionHandler
+
+db:
+  url: $REVIEW_DB_URL
+  user: $REVIEW_DB_USER
+  driver: $REVIEW_DB_DRIVER
+  password: $REVIEW_DB_PASS
+
+format:
+  date: $REVIEW_SERVICE_DATE_FORMAT

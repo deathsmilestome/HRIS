@@ -1,0 +1,22 @@
+ktor:
+  deployment:
+    host: $EMPLOYEE_SERVICE_HOST
+    port: $EMPLOYEE_SERVICE_PORT
+  application:
+    modules:
+      - com.hris.modules.KodeinKt.configureDI
+      - com.hris.modules.DatabasesKt.configureDatabases
+      - com.hris.modules.RoutingKt.configureRouting
+      - com.hris.modules.SerializationKt.configureSerialization
+      - com.hris.modules.StatusPagesKt.configureExceptionHandler
+
+db:
+  url: $EMPLOYEE_DB_URL
+  user: $EMPLOYEE_DB_USER
+  driver: $EMPLOYEE_DB_DRIVER
+  password: $EMPLOYEE_DB_PASS
+
+redis:
+  host: $EMPLOYEE_REDIS_HOST
+  port: $EMPLOYEE_REDIS_PORT
+  ttl: $EMPLOYEE_REDIS_TTL

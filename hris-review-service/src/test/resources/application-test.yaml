@@ -1,0 +1,20 @@
+ktor:
+  deployment:
+    host: "0.0.0.0"
+    port: 5001
+  application:
+    modules:
+      - com.hris.review.modules.KodeinKt.configureDI
+      - com.hris.review.modules.DatabasesKt.configureDatabases
+      - com.hris.review.InitTestReviewDataKt.initTestData
+      - com.hris.review.modules.RoutingKt.configureRouting
+      - com.hris.review.modules.SerializationKt.configureSerialization
+      - com.hris.review.modules.StatusPagesKt.configureExceptionHandler
+db:
+  url: "jdbc:postgresql://localhost:5435/reviews"
+  user: "dstm"
+  driver: "org.postgresql.Driver"
+  password: "dstm"
+
+format:
+  date: "dd-MM-yyyy-HH:mm"
