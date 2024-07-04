@@ -2,10 +2,13 @@ version: "3.9"
 
 services:
   employee-service:
+    container_name: "$EMPLOYEE_SERVICE_NAME"
     build: ./hris-employee-service
     env_file: ".env"
     ports:
       - "$EMPLOYEE_SERVICE_PORT:$EMPLOYEE_SERVICE_PORT"
+    volumes:
+      - employee-service-logs:/usr/local/bin/hris-employee-service/logs
     networks:
       - hris_network
     depends_on:
@@ -38,12 +41,15 @@ services:
       - hris_network
 #---------------------------------------------
   review-service:
+    container_name: "$REVIEW_SERVICE_NAME"
     build: ./hris-review-service
     env_file: ".env"
     ports:
       - "$REVIEW_SERVICE_PORT:$REVIEW_SERVICE_PORT"
     networks:
       - hris_network
+    volumes:
+      - review-service-logs:/usr/local/bin/hris-review-service/logs
     depends_on:
       - db-review
   db-review:
@@ -87,3 +93,5 @@ volumes:
   data-db-review:
   data-db-employee:
   redis_data:
+  review-service-logs:
+  employee-service-logs:
