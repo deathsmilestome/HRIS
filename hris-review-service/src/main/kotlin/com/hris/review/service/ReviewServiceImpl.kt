@@ -44,6 +44,4 @@ class ReviewServiceImpl(
     override suspend fun deleteReview(id: UUID) {
         reviewRepository.delete(id)
     }
-
-
 }

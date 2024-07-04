@@ -9,9 +9,9 @@ interface HierarchyService {
 
     suspend fun getSubs(id: Long): List<HierarchyNode>?
 
-    suspend fun getSupervisor(id: Long): HierarchyNode?
+    suspend fun getSup(id: Long): HierarchyNode?
 
-    suspend fun getEquals(id: Long): List<HierarchyNode>?
+    suspend fun getEqualEmployeesOnSameLevel(id: Long): List<HierarchyNode>?
 
     suspend fun getAllToHead(id: Long): HierarchyNode
 

@@ -21,6 +21,7 @@ class Settings(private val configuration: ApplicationConfig) {
 
     inner class Format {
         val dateFormat = getStringValueFromPropertiesFile(com.hris.review.util.DATE_FORMAT)
+        val dateFormatForReviewFilter = getStringValueFromPropertiesFile(com.hris.review.util.DATE_FORMAT_REVIEW_FILTER)
     }
 
     fun getStringValueFromPropertiesFile(field: String): String {
@@ -32,9 +33,5 @@ class Settings(private val configuration: ApplicationConfig) {
         val stringValue = value.getString()
         logger.trace("Property [$field] = [${stringValue}]")
         return stringValue
-    }
-
-    fun getListValuesFromPropertiesFile(field: String, regex: Regex): List<String> {
-        return getStringValueFromPropertiesFile(field).trim().split(regex)
     }
 }

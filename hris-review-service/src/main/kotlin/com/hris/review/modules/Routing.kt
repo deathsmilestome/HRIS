@@ -20,7 +20,6 @@ fun Application.configureRouting() {
         }
     }
     install(SwaggerUI) {
-
         info {
             title = "API"
             description = "An api documentation for review-service."

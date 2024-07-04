@@ -18,3 +18,4 @@ db:
 
 format:
   date: "dd-MM-yyyy-HH:mm"
+  date_review_filter: "dd-MM-yyyy"

@@ -8,7 +8,6 @@ class Settings(private val configuration: ApplicationConfig) {
 
     val db = Db()
     val redis = Redis()
-
     companion object {
         private val logger = LoggerFactory.getLogger(Settings::class.java)
     }
@@ -35,9 +34,5 @@ class Settings(private val configuration: ApplicationConfig) {
         val stringValue = value.getString()
         logger.trace("Property [$field] = [${stringValue}]")
         return stringValue
-    }
-
-    fun getListValuesFromPropertiesFile(field: String, regex: Regex): List<String> {
-        return getStringValueFromPropertiesFile(field).trim().split(regex)
     }
 }

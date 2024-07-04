@@ -6,5 +6,4 @@ const val DB_DRIVER = "db.driver"
 const val DB_PASSWORD = "db.password"
 
 const val DATE_FORMAT = "format.date"
-
-
+const val DATE_FORMAT_REVIEW_FILTER = "format.date_review_filter"

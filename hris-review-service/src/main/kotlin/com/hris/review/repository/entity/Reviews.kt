@@ -16,7 +16,6 @@ object Reviews : Table() {
 
     override val primaryKey = PrimaryKey(id)
 
-    // TODO описать создание индекса в доке к БД
     init {
         uniqueIndex(employeeId, createdAt)
     }

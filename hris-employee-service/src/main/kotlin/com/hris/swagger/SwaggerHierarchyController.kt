@@ -11,7 +11,6 @@ fun OpenApiRoute.descriptionGetHierarchyById() {
         pathParameter<Long>("id") {
             description = "Employee Id"
         }
-
     }
     response {
         HttpStatusCode.OK to {
@@ -57,18 +56,17 @@ fun OpenApiRoute.descriptionGetHierarchyById() {
     }
 }
 
-fun OpenApiRoute.descriptionGetEqualsById() {
-    description = "Get list of employees who equal to employee with provided id"
+fun OpenApiRoute.descriptionGetEmployeesOnSameLevelById() {
+    description = "Get list of employees on the same level to employee with provided id"
     request {
         pathParameter<Long>("id") {
             description = "Employee Id"
         }
-
     }
     response {
         HttpStatusCode.OK to {
             body<List<HierarchyNode>> {
-                description = "List of employees who equal to employee with provided id"
+                description = "List of employees on the same level to employee with provided id"
                 example("List of Employees") {
                     value = listOf(
                         HierarchyNode(

@@ -61,7 +61,7 @@ class EmployeeRepositoryImpl : EmployeeRepository {
         }
     }
 
-    override suspend fun getSupervisorId(id: Long): Long? {
+    override suspend fun getSupId(id: Long): Long? {
         return dbQuery {
             Employees.slice(Employees.supervisorId)
                 .select { Employees.id eq id }
@@ -102,7 +102,7 @@ class EmployeeRepositoryImpl : EmployeeRepository {
         }
     }
 
-    override suspend fun getEmployeeForHierarchyNode(id: Long): HierarchyNode {
+    override suspend fun getEmployeeAsHierarchyNode(id: Long): HierarchyNode {
         return dbQuery {
             Employees.select { Employees.id eq id }
                 .map {

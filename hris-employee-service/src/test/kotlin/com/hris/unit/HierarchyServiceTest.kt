@@ -1,12 +1,9 @@
 package com.hris.unit
 
 import com.hris.MockDatabaseTransaction
-import com.hris.cache.Cache
 import com.hris.dto.Employee
 import com.hris.dto.HierarchyNode
-import com.hris.dto.toHierarchyNode
 import com.hris.repository.EmployeeRepositoryImpl
-import com.hris.service.EmployeeServiceImpl
 import com.hris.service.HierarchyServiceImpl
 import io.ktor.server.plugins.*
 import io.mockk.coEvery
@@ -31,12 +28,12 @@ class HierarchyServiceTest : MockDatabaseTransaction() {
         val employeeRepository = mockk<EmployeeRepositoryImpl>()
         val hierarchyService = HierarchyServiceImpl(employeeRepository)
 
-        coEvery { employeeRepository.getEmployeeForHierarchyNode(2L) } returns employee
+        coEvery { employeeRepository.getEmployeeAsHierarchyNode(2L) } returns employee
         coEvery { employeeRepository.getSubs(2L) } returns listOf(employeeFirstSub)
-        coEvery { employeeRepository.getSupervisorId(2L) } returns 1L
-        coEvery { employeeRepository.getEmployeeForHierarchyNode(1L) } returns employeeSup
+        coEvery { employeeRepository.getSupId(2L) } returns 1L
+        coEvery { employeeRepository.getEmployeeAsHierarchyNode(1L) } returns employeeSup
 
-        coEvery { employeeRepository.getSupervisorId(1L) } returns null
+        coEvery { employeeRepository.getSupId(1L) } returns null
         coEvery { employeeRepository.getSubs(1L) } returns listOf(employee)
 
         runBlocking {
@@ -57,13 +54,13 @@ class HierarchyServiceTest : MockDatabaseTransaction() {
         val hierarchyService = HierarchyServiceImpl(employeeRepository)
 
         coEvery { hierarchyService.checkEmployee(2L).supervisorId } returns 1L
-        coEvery { employeeRepository.getEmployeeForHierarchyNode(1L) } returns employeeSup
+        coEvery { employeeRepository.getEmployeeAsHierarchyNode(1L) } returns employeeSup
 
         coEvery { hierarchyService.checkEmployee(1L).supervisorId } returns null
 
         runBlocking {
-            assertEquals(employeeSup, hierarchyService.getSupervisor(2L))
-            assertNull(hierarchyService.getSupervisor(1L))
+            assertEquals(employeeSup, hierarchyService.getSup(2L))
+            assertNull(hierarchyService.getSup(1L))
         }
     }
 
@@ -90,20 +87,20 @@ class HierarchyServiceTest : MockDatabaseTransaction() {
         val hierarchyService = HierarchyServiceImpl(employeeRepository)
 
         coEvery { hierarchyService.checkEmployee(3L) } returns mockk()
-        coEvery { employeeRepository.getSupervisorId(3L) } returns 2
+        coEvery { employeeRepository.getSupId(3L) } returns 2
         coEvery { employeeRepository.getSubsExceptOne(2L, 3L) } returns listOf(employeeSecondSub)
 
         coEvery { hierarchyService.checkEmployee(1L) } returns mockk()
-        coEvery { employeeRepository.getSupervisorId(1L) } returns null
+        coEvery { employeeRepository.getSupId(1L) } returns null
 
         coEvery { hierarchyService.checkEmployee(2L) } returns mockk()
-        coEvery { employeeRepository.getSupervisorId(2L) } returns 4L
+        coEvery { employeeRepository.getSupId(2L) } returns 4L
         coEvery { employeeRepository.getSubsExceptOne(4L, 2L) } returns listOf()
 
         runBlocking {
-            assertEquals(listOf(employeeSecondSub), hierarchyService.getEquals(3L))
-            assertNull(hierarchyService.getEquals(1L))
-            assertNull(hierarchyService.getEquals(2L))
+            assertEquals(listOf(employeeSecondSub), hierarchyService.getEqualEmployeesOnSameLevel(3L))
+            assertNull(hierarchyService.getEqualEmployeesOnSameLevel(1L))
+            assertNull(hierarchyService.getEqualEmployeesOnSameLevel(2L))
         }
     }
 
@@ -112,12 +109,12 @@ class HierarchyServiceTest : MockDatabaseTransaction() {
         val employeeRepository = mockk<EmployeeRepositoryImpl>()
         val hierarchyService = HierarchyServiceImpl(employeeRepository)
 
-        coEvery { employeeRepository.getSupervisorId(3L) } returns 2L
-        coEvery { employeeRepository.getSupervisorId(2L) } returns 1L
-        coEvery { employeeRepository.getSupervisorId(1L) } returns null
-        coEvery { employeeRepository.getEmployeeForHierarchyNode(1L)} returns employeeSup
-        coEvery { employeeRepository.getEmployeeForHierarchyNode(2L) } returns employee
-        coEvery { employeeRepository.getEmployeeForHierarchyNode(3L) } returns employeeFirstSub
+        coEvery { employeeRepository.getSupId(3L) } returns 2L
+        coEvery { employeeRepository.getSupId(2L) } returns 1L
+        coEvery { employeeRepository.getSupId(1L) } returns null
+        coEvery { employeeRepository.getEmployeeAsHierarchyNode(1L)} returns employeeSup
+        coEvery { employeeRepository.getEmployeeAsHierarchyNode(2L) } returns employee
+        coEvery { employeeRepository.getEmployeeAsHierarchyNode(3L) } returns employeeFirstSub
 
 
 

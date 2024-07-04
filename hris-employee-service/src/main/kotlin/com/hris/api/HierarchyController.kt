@@ -1,6 +1,5 @@
 package com.hris.api
 
-import com.hris.dto.HierarchyNode
 import com.hris.service.HierarchyService
 import com.hris.swagger.*
 import io.github.smiley4.ktorswaggerui.dsl.routing.get
@@ -16,16 +15,14 @@ fun Route.hierarchyRoute() {
 
     get("/hierarchy/{id}", { descriptionGetHierarchyById() } ) {
         val hierarchy = call.parameters["id"]?.toLongOrNull()
-            ?.let {
-                hierarchyService.getDefaultHierarchy(it)
-            }
+            ?.let { hierarchyService.getDefaultHierarchy(it) }
             ?: call.respond(HttpStatusCode.BadRequest)
         call.respond(hierarchy)
     }
 
-    get("/hierarchy/equals/{id}", { descriptionGetEqualsById() } ) {
+    get("/hierarchy/equals/{id}", { descriptionGetEmployeesOnSameLevelById() } ) {
         val equals = call.parameters["id"]?.toLongOrNull()
-            ?.let { hierarchyService.getEquals(it) ?: call.respond(HttpStatusCode.NoContent) }
+            ?.let { hierarchyService.getEqualEmployeesOnSameLevel(it) ?: call.respond(HttpStatusCode.NoContent) }
             ?: call.respond(HttpStatusCode.BadRequest)
         call.respond(equals)
     }
@@ -39,16 +36,14 @@ fun Route.hierarchyRoute() {
 
     get("/hierarchy/supervisor/{id}", { descriptionGetSupervisorById() } ) {
         val supervisor = call.parameters["id"]?.toLongOrNull()
-            ?.let { hierarchyService.getSupervisor(it) ?: call.respond(HttpStatusCode.NoContent) }
+            ?.let { hierarchyService.getSup(it) ?: call.respond(HttpStatusCode.NoContent) }
             ?: call.respond(HttpStatusCode.BadRequest)
         call.respond(supervisor)
     }
 
     get("/hierarchy/head/{id}", { descriptionGetHierarchyToHeadById() } ) {
         val hierarchy = call.parameters["id"]?.toLongOrNull()
-            ?.let {
-                hierarchyService.getAllToHead(it)
-            }
+            ?.let { hierarchyService.getAllToHead(it) }
             ?: call.respond(HttpStatusCode.BadRequest)
         call.respond(hierarchy)
     }

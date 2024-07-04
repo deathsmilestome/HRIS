@@ -20,7 +20,6 @@ class EmployeeServiceImpl(
             .also { cache.set(it.id.toString(), it) }
     }
 
-
     override suspend fun createEmployee(employee: Employee): Long {
         return newSuspendedTransaction {
             employee.supervisorId?.let { supervisorId ->

@@ -18,3 +18,4 @@ db:
 
 format:
   date: $REVIEW_SERVICE_DATE_FORMAT
+  date_review_filter: $DATE_FORMAT_REVIEW_FILTER

@@ -18,13 +18,13 @@ interface EmployeeRepository {
 
     suspend fun delete(id: Long)
 
-    suspend fun getSupervisorId(id: Long): Long?
+    suspend fun getSupId(id: Long): Long?
 
     suspend fun getSubs(id: Long): List<HierarchyNode>
 
     suspend fun getSubsExceptOne(id: Long, exceptId: Long): List<HierarchyNode>
 
-    suspend fun getEmployeeForHierarchyNode(id: Long): HierarchyNode
+    suspend fun getEmployeeAsHierarchyNode(id: Long): HierarchyNode
 
     suspend fun getEmployeeSubCount(id: Long): Int?
 

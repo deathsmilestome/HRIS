@@ -17,13 +17,10 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import org.kodein.di.instance
 import org.kodein.di.ktor.closestDI
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
 fun Route.employeeRoute() {
     val employeeService: EmployeeService by closestDI().instance()
 
-    // TODO api version
     get("/employee/{id}", { descriptionGetEmployeeById() } ) {
         val employee = call.parameters["id"]?.toLongOrNull()
             ?.let { employeeService.getEmployee(it) }

@@ -14,11 +14,3 @@ data class Employee(
     val createdAt: String? = null,
     val lastModifiedAt: String? = null,
 )
-
-fun Employee.toHierarchyNode() =
-    HierarchyNode(
-        this.id.toString(),
-        this.name,
-        this.surname,
-        this.position
-    )

@@ -10,7 +10,6 @@ fun OpenApiRoute.descriptionGetEmployeeById() {
         pathParameter<Long>("id") {
             description = "Employee Id"
         }
-
     }
     response {
         HttpStatusCode.OK to {
@@ -57,7 +56,6 @@ fun OpenApiRoute.descriptionCreateEmployee() {
                 )
             }
         }
-
     }
     response {
         HttpStatusCode.OK to {

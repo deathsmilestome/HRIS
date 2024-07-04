@@ -15,6 +15,5 @@ object Employees : Table() {
     val createdAt = datetime("created_at").defaultExpression(CurrentDateTime)
     val lastModifiedAt = datetime("last_modified_at").defaultExpression(CurrentDateTime)
 
-    // TODO описать создание индекса в доке к БД
     override val primaryKey = PrimaryKey(id)
 }
